@@ -1,0 +1,155 @@
+{
+  "nodes": {
+    "caisson": {
+      "inputs": {
+        "caisson-core": "caisson-core",
+        "flake-parts": "flake-parts",
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1793244455,
+        "narHash": "sha256-FAixpwyAWmhrzmh0fMGt7y0KIcNLqBIGICfMvbExRLo=",
+        "owner": "nix-caisson",
+        "repo": "caisson",
+        "rev": "ec291bc9637a95606f7fa9df942d5e803705d8f5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-caisson",
+        "repo": "caisson",
+        "type": "github"
+      }
+    },
+    "caisson-core": {
+      "locked": {
+        "lastModified": 1793243975,
+        "narHash": "sha256-OzlG2Nhl/kU2UUPq+ARH/GKUHmOqAxQu5Ug/+aT1ECc=",
+        "owner": "nix-caisson",
+        "repo": "caisson-core",
+        "rev": "6868bca2682e96d56714bc9c9adcf0048fbe132f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-caisson",
+        "repo": "caisson-core",
+        "type": "github"
+      }
+    },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "caisson",
+          "nixpkgs-lib"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788450739,
+        "narHash": "sha256-glZLQlzIn1fXH6PazR2iUmTo7kzzyYSshrWhLS9TqCU=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "31729ca8cbdb4fa927b34e5f4353e6a83f39e993",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_2": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793576659,
+        "narHash": "sha256-V1h85lUaJBQoHFrB2vpXZOE0Ju1MYSnIpsehoVZYlDo=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "ea2630b7470978622c7689a1ff75d2b389175399",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "impurifier": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793639406,
+        "narHash": "sha256-8t5OwyIwIb810CNp+ZOdhHQTFUejNbDJhfwV9ouNqVw=",
+        "owner": "nix-impurifiers",
+        "repo": "impurifier",
+        "rev": "7b365f48342b8ce06642528829e8b890d08b54bd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-impurifiers",
+        "repo": "impurifier",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1792210252,
+        "narHash": "sha256-Mh0PUaIv4nFY+8wAGonaEh8iBzwsmdNlwjVHmFg1Biw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "09063bd1f2b36fd9fd793c36dfade7bd40a93dfc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1789266065,
+        "narHash": "sha256-XtTdVeJX6X/gU+vGIUEJHirotv/lYP5+Q9irMH6HWPY=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "b91d4f1bc958e0bdfd6cb3db4a280486006f5002",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "caisson": "caisson",
+        "flake-parts": "flake-parts_2",
+        "impurifier": "impurifier",
+        "nixpkgs": "nixpkgs",
+        "rpm-adapter": "rpm-adapter"
+      }
+    },
+    "rpm-adapter": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793639516,
+        "narHash": "sha256-Wk1GU2oaUP4azudMFa7H8+XiQaMsVB6YDX0eeJwzpeY=",
+        "owner": "nix-impurifiers",
+        "repo": "rpm-impurifier",
+        "rev": "8a8f1180114a8997a34c046af87f283e3e2df916",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-impurifiers",
+        "repo": "rpm-impurifier",
+        "rev": "8a8f1180114a8997a34c046af87f283e3e2df916",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
