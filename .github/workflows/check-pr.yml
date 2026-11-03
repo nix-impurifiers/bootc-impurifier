@@ -36,7 +36,7 @@ concurrency:
 jobs:
   check-pr:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
     env:
       # The build cache on disk: a Nix binary cache plus the root tree
       # under roots/, carried whole in one Actions cache entry. The
@@ -110,7 +110,7 @@ jobs:
 
       - name: Run the flake checks
         if: steps.guard.outputs.build == 'true'
-        run: nix flake check --print-build-logs
+        run: nix flake check --print-build-logs --max-jobs 2
 
       - name: Root this build and apply the cache priorities
         if: steps.guard.outputs.build == 'true'
