@@ -135,11 +135,11 @@
     "rpm-adapter": {
       "flake": false,
       "locked": {
-        "lastModified": 1793684432,
-        "narHash": "sha256-MANuKUG8Qy5yhbXxVUcl+n+Vs3xFhRtjmkLm2X4DoHs=",
+        "lastModified": 1793685893,
+        "narHash": "sha256-X0HcHmGpdWykmg4piUz6N3TAMsHfTOF81DJsXjrBAuU=",
         "owner": "nix-impurifiers",
         "repo": "rpm-impurifier",
-        "rev": "3c48b0928669bc9a6a6233a993443706e71b3cf0",
+        "rev": "9ae4d727003cb03b65fc8350d4dca90325f385d4",
         "type": "github"
       },
       "original": {
