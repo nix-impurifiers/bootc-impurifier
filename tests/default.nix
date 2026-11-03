@@ -3,8 +3,26 @@
   pkgs,
   impurifier,
   coreSrc,
+  bundled ? false,
 }:
 let
+  staticNix = import (coreSrc + "/tests/static-nix.nix") { inherit pkgs; };
+  bundleArgs = pkgs.lib.optionalAttrs bundled {
+    bundledNixStore = "${staticNix}/bin/nix-store";
+    bundledNixNotices = [ "${pkgs.nix.src}/COPYING" ];
+  };
+  builder = impurifier // {
+    makeNetImage =
+      args:
+      impurifier.makeNetImage (
+        args // { applications = map (app: app // bundleArgs) args.applications; }
+      );
+    makeOfflineImage =
+      args:
+      impurifier.makeOfflineImage (
+        args // { applications = map (app: app // bundleArgs) args.applications; }
+      );
+  };
   fixture = import ./fixture.nix { inherit pkgs impurifier; };
   disk = pkgs.runCommand "tukit-empty-btrfs.raw" { nativeBuildInputs = [ pkgs.btrfs-progs ]; } ''
     truncate -s 8192M $out
@@ -53,15 +71,15 @@ let
     pname = "bootc-app";
     version = "2";
   };
-  net = impurifier.makeNetImage {
+  net = builder.makeNetImage {
     inherit base;
     applications = [ { pkg = app; } ];
   };
-  offline = impurifier.makeOfflineImage {
+  offline = builder.makeOfflineImage {
     inherit base;
     applications = [ { pkg = app; } ];
   };
-  upgrade = impurifier.makeOfflineImage {
+  upgrade = builder.makeOfflineImage {
     inherit base;
     applications = [ { pkg = app2; } ];
   };
@@ -78,6 +96,21 @@ let
       ];
       extraContents = [ (hardwareFixture.driver version) ];
     };
+  nativeTree =
+    version:
+    pkgs.runCommand "native-bootc-${version}" { nativeBuildInputs = [ pkgs.pkgsStatic.stdenv.cc ]; } ''
+      mkdir -p $out/usr/bin
+      echo '#include <stdio.h>' > proof.c
+      echo 'int main(void) { puts("native-bootc-${version}"); return 0; }' >> proof.c
+      $CC -static proof.c -o $out/usr/bin/native-proof
+    '';
+  nativeImage =
+    version:
+    impurifier.makeImage {
+      inherit base;
+      applications = [ ];
+      extraContents = [ (nativeTree version) ];
+    };
   empty = impurifier.makeImage {
     inherit base;
     applications = [ ];
@@ -86,7 +119,7 @@ let
 in
 {
   native-vm = pkgs.testers.runNixOSTest {
-    name = "bootc-native-contract";
+    name = "bootc-native-contract${pkgs.lib.optionalString bundled "-bundled"}";
     globalTimeout = 900;
     requiredFeatures = {
       kvm = false;
@@ -107,11 +140,36 @@ in
             os.environ["QEMU_KERNEL_PARAMS"] = "ostree=" + option
             machine.start()
             machine.wait_for_unit("multi-user.target", timeout=60)
+        ${pkgs.lib.optionalString bundled ''
+          machine.succeed("mkdir -p /home/consumer/no-nix; printf '#!${pkgs.runtimeShell}\\necho incompatible-client\\n' > /home/consumer/no-nix/nix-store; chmod 755 /home/consumer/no-nix/nix-store")
+        ''}
         def user(command):
-            return "su - consumer -c " + shlex.quote(command)
+            return "su - consumer -c " + shlex.quote(("PATH=/home/consumer/no-nix:$PATH " if ${
+              if bundled then "True" else "False"
+            } else "") + command)
         def finalize():
             machine.succeed("PATH=/usr/bin:/usr/sbin:$PATH ostree admin finalize-staged")
         boot_default()
+        machine.succeed("cp -r ${nativeImage "1"} /var/lib/bootc-images/native1; cp -r ${nativeImage "2"} /var/lib/bootc-images/native2")
+        machine.succeed("bootc switch --transport oci /var/lib/bootc-images/native1")
+        finalize()
+        boot_default()
+        assert machine.succeed("/usr/bin/native-proof").strip() == "native-bootc-1"
+        machine.succeed("mkdir -p /var/lib/native-proof/usr/bin; cp /usr/bin/native-proof /var/lib/native-proof/usr/bin/native-proof")
+        assert machine.succeed("chroot /var/lib/native-proof /usr/bin/native-proof").strip() == "native-bootc-1"
+        machine.succeed("test ! -e /var/lib/native-proof/nix; test ! -e /usr/share/bootc-impurifier/apps")
+        machine.succeed("bootc switch --transport oci /var/lib/bootc-images/native2")
+        finalize()
+        boot_default()
+        assert machine.succeed("/usr/bin/native-proof").strip() == "native-bootc-2"
+        machine.succeed("bootc rollback")
+        finalize()
+        boot_default()
+        assert machine.succeed("/usr/bin/native-proof").strip() == "native-bootc-1"
+        machine.succeed("bootc switch --transport oci /var/lib/bootc-images/empty")
+        finalize()
+        boot_default()
+        machine.succeed("test ! -e /usr/bin/native-proof")
         machine.succeed("nix-store --gc; test ! -e ${builtins.unsafeDiscardStringContext (toString app)}")
         machine.succeed("cp -r /var/lib/bootc-images/net /var/lib/bootc-images/tampered; chmod -R u+w /var/lib/bootc-images/tampered")
         machine.succeed("${pkgs.python3}/bin/python3 -c \"import json,pathlib; root=pathlib.Path('/var/lib/bootc-images/tampered'); index=json.loads((root/'index.json').read_text()); manifest=json.loads((root/'blobs/sha256'/index['manifests'][0]['digest'].split(':')[1]).read_text()); p=root/'blobs/sha256'/manifest['layers'][-1]['digest'].split(':')[1]; b=bytearray(p.read_bytes()); b[len(b)//2]^=1; p.write_bytes(b)\"")

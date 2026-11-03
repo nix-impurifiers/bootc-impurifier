@@ -73,3 +73,24 @@ OSTree backend. Services/accounts, composefs-only storage, remote signing and
 registries, concurrent administration and other architectures require separate
 coverage. `buildRpm` is also exported for native fixture/provider packages;
 `package`, `native`, `nativeClient`, and `sdk` expose the tooling outputs.
+
+## Native payloads and bundled clients
+
+`makeImage { base; applications = [ ]; extraContents = [ nativeTree ]; }`
+composes a prepared filesystem tree without a Nix application SDK or engine.
+The producer supplies a bootc-compatible base and files that work in that
+base; this does not relocate binaries. Native payloads use bootc's image
+ownership, upgrades, rollback and image replacement. The VM boots native-only
+application layers, executes a static proof, upgrades, rolls back and removes
+it. The installed proof also runs in a separate root without `/nix`; the
+NixOS base itself still uses its existing store and host tools.
+
+Nix-backed application constructors also accept `bundledNixStore` (a supplied
+static ELF executable) and `bundledNixNotices` (upstream notice files). The
+application carries the client privately and uses a Python-only SDK. Launch
+prefers a compatible external client, then the bundle, before registering roots
+or capturing hardware. Explicit `IMPURIFIER_NIX_STORE` disables fallback.
+Trusted preparation still uses host tools and never executes the image-owned
+client as root. An existing store, daemon and initial SDK preparation remain
+required. The separate bundled VM repeats the native lifecycle with an
+incompatible external candidate; this is not a Nix installer.

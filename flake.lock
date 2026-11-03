@@ -79,11 +79,11 @@
     "impurifier": {
       "flake": false,
       "locked": {
-        "lastModified": 1793639406,
-        "narHash": "sha256-8t5OwyIwIb810CNp+ZOdhHQTFUejNbDJhfwV9ouNqVw=",
+        "lastModified": 1793704995,
+        "narHash": "sha256-Fb55SSyv0Hh4wOkOV44KyOw0WMoRgq+PcMcnKDyZkoY=",
         "owner": "nix-impurifiers",
         "repo": "impurifier",
-        "rev": "7b365f48342b8ce06642528829e8b890d08b54bd",
+        "rev": "30947e248c0924909080254014ae87e0ce349f46",
         "type": "github"
       },
       "original": {
@@ -135,11 +135,11 @@
     "rpm-adapter": {
       "flake": false,
       "locked": {
-        "lastModified": 1793685893,
-        "narHash": "sha256-X0HcHmGpdWykmg4piUz6N3TAMsHfTOF81DJsXjrBAuU=",
+        "lastModified": 1793703275,
+        "narHash": "sha256-8f52kYTbGEfGJDiA5+HKeU9R1hqARkwb1e6CjeyRndk=",
         "owner": "nix-impurifiers",
         "repo": "rpm-impurifier",
-        "rev": "9ae4d727003cb03b65fc8350d4dca90325f385d4",
+        "rev": "964548520253731bf17d460b4843bb3408daa0b7",
         "type": "github"
       },
       "original": {
